@@ -10,9 +10,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const blocks = await notion.blocks.children.list({
-      block_id: pageId,
-    });
+    const blocks = await notion.blocks.children.list({ block_id: pageId });
 
     const content = blocks.results.map(block => {
       if (block[block.type]?.rich_text) {
