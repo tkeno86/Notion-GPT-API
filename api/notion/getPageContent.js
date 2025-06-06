@@ -10,19 +10,20 @@ export default async function handler(req, res) {
   }
 
   try {
-    const blocks = await notion.blocks.children.list({ block_id: pageId });
+    const blocks = await notion.blocks.children.list({
+      block_id: pageId,
+    });
 
-    const content = blocks.results
-      .map(block => {
-        const rich = block[block.type]?.rich_text;
-        return rich?.map(t => t.plain_text).join("") || "";
-      })
-      .filter(Boolean)
-      .join("\n");
+    const content = blocks.results.map(block => {
+      if (block[block.type]?.rich_text) {
+        return block[block.type].rich_text.map(rt => rt.plain_text).join("");
+      }
+      return "";
+    }).join("\n");
 
     res.status(200).json({ content });
-  } catch (err) {
-    console.error("Error fetching Notion page:", err);
+  } catch (error) {
+    console.error(error.body || error.message);
     res.status(500).json({ error: "Failed to fetch Notion page" });
   }
 }
